@@ -10,6 +10,19 @@ const io = socket(server,{
 
 io.on("connection",(socket)=>{
 
+    //now you can perform different events 
+    socket.on("joinChat",()=>{
+
+    });
+
+    socket.on("sendMessage",()=>{
+
+    });
+
+    socket.on("disconnect",()=>{
+        
+    })
+
 })
 }
 

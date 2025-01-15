@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const http = require('http');
 const app = express();
+const initializeSocket = require("./utils/socket")
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
@@ -26,14 +27,9 @@ app.use('/', userroute);
 
 const server = http.createServer(app)
 //initialization of socket.io
+initializeSocket(server)
 
-const socket = require('socket.io');
 
-const io = socket(server,{
-    cors:{
-        origin:"http://localhost:5173",
-    },
-});
 
 // Database Connection and Server Start
 connectDB()

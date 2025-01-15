@@ -2,6 +2,7 @@ const express = require('express');
 const connectDB = require('./config/dbConfig');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const http = require('http');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -9,7 +10,6 @@ app.use(cors({
     origin: ["http://localhost:5173","http://localhost:5174"],// The frontend URL
     credentials: true, // Allow credentials such as cookies to be sent
 }));
-
 
 
 
@@ -23,11 +23,14 @@ app.use('/', profileroute);
 app.use('/', requestroute);
 app.use('/', userroute);
 
+
+const server = http.createServer(app)
+
 // Database Connection and Server Start
 connectDB()
     .then(() => {
         console.log('Database connection established...');
-        app.listen(5000, () => {
+        server.listen(5000, () => {
             console.log('Server is running on port 5000');
         });
     })

@@ -25,6 +25,15 @@ app.use('/', userroute);
 
 
 const server = http.createServer(app)
+//initialization of socket.io
+
+const socket = require('socket.io');
+
+const io = socket(server,{
+    cors:{
+        origin:"http://localhost:5173",
+    },
+});
 
 // Database Connection and Server Start
 connectDB()

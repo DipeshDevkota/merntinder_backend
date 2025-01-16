@@ -9,11 +9,11 @@ const initializeSocket = (server) => {
 
   io.on("connection", (socket) => {
     //now you can perform different events
-    socket.on("joinChat", ({userId,targetUserId}) => {
+    socket.on("joinChat", ({id,userId}) => {
         console.log("UserId is",userId)
-        console.log("TargetUserId is",targetUserId)
+        console.log("TargetUserId is",id)
 
-         const roomId= [userId,targetUserId].join("_")
+         const roomId= [userId,id].join("_")
          console.log("RoomId is ",roomId);
          socket.join(roomId)
 

@@ -22,7 +22,20 @@ const initializeSocket = (server) => {
 
     });
 
-    socket.on("sendMessage", () => {});
+    socket.on("sendMessage", ({id,firstName,newMessage,userId}) => {
+      console.log("Socketonsendmessagecalled")
+      console.log("Message that is sent to the cliens id ",id)
+      console.log("Loggedin Users Id",userId)
+      console.log("Loggedin Users firstName",firstName)
+      console.log("Message while sending the message",newMessage)
+
+      const roomId= [userId,id].sort().join("_");
+         console.log("RoomId is ",roomId);
+      
+         io.to(roomId).emit("messageReceived",{firstName,text})
+      
+
+    });
 
     socket.on("disconnect", () => {});
   });

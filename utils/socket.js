@@ -1,36 +1,55 @@
 const socket = require("socket.io");
+const crypto = require("crypto");
+
+const getSecretRoomId =(userId,id)=>{
+  return crypto
+  .createHash("sha256")
+  .update([userId,id].sort().join("$"))
+  .digest("hex")
+
+
+}
 
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: "http://localhost:5173", // Make sure this is correct
+      origin: "http://localhost:5173",
     },
   });
-
   io.on("connection", (socket) => {
-    // Handling the joinChat event
+    console.log(`New connection: ${socket.id}`);
+
+    // User joins a chat room
     socket.on("joinChat", ({ id, firstName, userId }) => {
-      console.log("UserId is", userId);
-      console.log("TargetUserId is", id);
-2
-      const roomId = [userId, id].sort().join("_");
-      console.log("RoomId is ", roomId);
-      socket.join(roomId);
-      console.log(firstName + " joined room", userId);
+      console.log("UserId:", userId, "TargetUserId:", id);
+
+      const roomId = getSecretRoomId(id,userId);
+      console.log("RoomId:", roomId);
+
+      if (!socket.rooms.has(roomId)) {
+        socket.join(roomId);
+        console.log(`${firstName} joined room ${roomId}`);
+      } else {
+        console.log(`${firstName} already in room ${roomId}`);
+      }
     });
 
-    // Handling the sendMessage event
+    // Handle sending messages
     socket.on("sendMessage", ({ id, firstName, text, userId }) => {
-      console.log("Socket on sendMessage called");
-      const roomId = [userId, id].sort().join("_");
-      console.log("RoomId is ", roomId);
+      console.log("Socket ID:", socket.id);
+      console.log("Message Details:", { id, firstName, text, userId });
 
-      // Emit the message to the room
+      const roomId = getSecretRoomId(id,userId);
+
+      console.log("RoomId:", roomId);
+
+      // Emit message to the room
       io.to(roomId).emit("messageReceived", { firstName, text });
     });
 
+    // Handle disconnection
     socket.on("disconnect", () => {
-      // Handle disconnections if needed
+      console.log(`Socket disconnected: ${socket.id}`);
     });
   });
 };

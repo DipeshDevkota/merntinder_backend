@@ -2,6 +2,7 @@ const socket = require("socket.io");
 const crypto = require("crypto");
 const ChatModel = require("../models/chat");
 const connectionRequestModel = require("../models/connectionRequest.model");
+const { containsOffensiveWords, censorMessage } = require("../utils/contentFilter");  // Import content filter
 
 const getSecretRoomId = (userId, id) => {
   return crypto
@@ -40,10 +41,9 @@ const initializeSocket = (server) => {
       console.log("Message Details:", { id, firstName, text, userId });
 
       const roomId = getSecretRoomId(id, userId);
-      console.log(firstName + "" + text);
+      console.log(firstName + " " + text);
 
-      //TODO: Check if userId and id are friends
-
+      // Check if userId and id are friends
       const existingConnectionRequest = await connectionRequestModel.findOne({
         $or: [
           { fromUserId: userId, toUserId: id, status: "accepted" },
@@ -58,6 +58,17 @@ const initializeSocket = (server) => {
         });
       }
 
+      // Content Filtering - Check for offensive words
+      if (containsOffensiveWords(text)) {
+        return socket.emit("messageError", {
+          message: "Your message contains offensive words.",
+        });
+      }
+
+      // Censor offensive words if needed
+      const censoredMessage = censorMessage(text);
+
+      // Handle chat message saving
       let chat = await ChatModel.findOne({
         participants: {
           $all: [id, userId],
@@ -73,15 +84,13 @@ const initializeSocket = (server) => {
 
       chat.messages.push({
         senderId: userId,
-        text,
+        text: censoredMessage, // Save the censored message
       });
 
       await chat.save();
 
-      //  Check if the sender and the receiver id exists in the db or not//
-
-      // Emit message to the room
-      io.to(roomId).emit("messageReceived", { firstName, text });
+      // Emit the censored message to the room
+      io.to(roomId).emit("messageReceived", { firstName, text: censoredMessage });
     });
 
     // Handle disconnection

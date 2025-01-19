@@ -38,8 +38,8 @@ initializeSocket(server)
 connectDB()
     .then(() => {
         console.log('Database connection established...');
-        server.listen(5000, () => {
-            console.log('Server is running on port 5000');
+        server.listen(3006, () => {
+            console.log('Server is running on port 3006');
         });
     })
     .catch((err) => {

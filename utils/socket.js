@@ -1,5 +1,6 @@
 const socket = require("socket.io");
 const crypto = require("crypto");
+const ChatModel = require("../models/chat");
 
 const getSecretRoomId =(userId,id)=>{
   return crypto
@@ -35,13 +36,38 @@ const initializeSocket = (server) => {
     });
 
     // Handle sending messages
-    socket.on("sendMessage", ({ id, firstName, text, userId }) => {
+    socket.on("sendMessage", async({ id, firstName, text, userId }) => {
       console.log("Socket ID:", socket.id);
       console.log("Message Details:", { id, firstName, text, userId });
 
       const roomId = getSecretRoomId(id,userId);
+      console.log(firstName+""+ text);
 
-      console.log("RoomId:", roomId);
+  //  Check if the sender and the receiver id exists in the db or not//
+
+      let chat = await ChatModel.findOne({
+        participants:{
+        $all:[id,userId]}
+      });
+
+
+      if(!chat)
+      {
+      chat=  new ChatModel({
+          participants:[id,userId],
+          messages:[]
+
+        })
+      }
+
+      chat.messages.push({
+        senderId:userId,
+        text,
+      })
+
+
+
+      await chat.save();
 
       // Emit message to the room
       io.to(roomId).emit("messageReceived", { firstName, text });

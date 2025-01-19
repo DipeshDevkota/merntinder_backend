@@ -1,15 +1,14 @@
 const socket = require("socket.io");
 const crypto = require("crypto");
 const ChatModel = require("../models/chat");
+const connectionRequestModel = require("../models/connectionRequest.model");
 
-const getSecretRoomId =(userId,id)=>{
+const getSecretRoomId = (userId, id) => {
   return crypto
-  .createHash("sha256")
-  .update([userId,id].sort().join("$"))
-  .digest("hex")
-
-
-}
+    .createHash("sha256")
+    .update([userId, id].sort().join("$"))
+    .digest("hex");
+};
 
 const initializeSocket = (server) => {
   const io = socket(server, {
@@ -24,7 +23,7 @@ const initializeSocket = (server) => {
     socket.on("joinChat", ({ id, firstName, userId }) => {
       console.log("UserId:", userId, "TargetUserId:", id);
 
-      const roomId = getSecretRoomId(id,userId);
+      const roomId = getSecretRoomId(id, userId);
       console.log("RoomId:", roomId);
 
       if (!socket.rooms.has(roomId)) {
@@ -36,38 +35,50 @@ const initializeSocket = (server) => {
     });
 
     // Handle sending messages
-    socket.on("sendMessage", async({ id, firstName, text, userId }) => {
+    socket.on("sendMessage", async ({ id, firstName, text, userId }) => {
       console.log("Socket ID:", socket.id);
       console.log("Message Details:", { id, firstName, text, userId });
 
-      const roomId = getSecretRoomId(id,userId);
-      console.log(firstName+""+ text);
+      const roomId = getSecretRoomId(id, userId);
+      console.log(firstName + "" + text);
 
-  //  Check if the sender and the receiver id exists in the db or not//
+      //TODO: Check if userId and id are friends
 
-      let chat = await ChatModel.findOne({
-        participants:{
-        $all:[id,userId]}
+      const existingConnectionRequest = await connectionRequestModel.findOne({
+        $or: [
+          { fromUserId: userId, toUserId: id, status: "accepted" },
+          { fromUserId: id, toUserId: userId, status: "accepted" },
+        ],
       });
 
+      if (!existingConnectionRequest) {
+        return socket.emit("messageError", {
+          message:
+            "You are not friends or the connection request is not accepted.",
+        });
+      }
 
-      if(!chat)
-      {
-      chat=  new ChatModel({
-          participants:[id,userId],
-          messages:[]
+      let chat = await ChatModel.findOne({
+        participants: {
+          $all: [id, userId],
+        },
+      });
 
-        })
+      if (!chat) {
+        chat = new ChatModel({
+          participants: [id, userId],
+          messages: [],
+        });
       }
 
       chat.messages.push({
-        senderId:userId,
+        senderId: userId,
         text,
-      })
-
-
+      });
 
       await chat.save();
+
+      //  Check if the sender and the receiver id exists in the db or not//
 
       // Emit message to the room
       io.to(roomId).emit("messageReceived", { firstName, text });

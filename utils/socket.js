@@ -2,7 +2,7 @@ const socket = require("socket.io");
 const crypto = require("crypto");
 const ChatModel = require("../models/chat");
 const connectionRequestModel = require("../models/connectionRequest.model");
-const { containsOffensiveWords, censorMessage } = require("../utils/contentFilter");  // Import content filter
+const {loadToxicityModel, checkToxicity} = require('../utils/contentFilter')
 
 const getSecretRoomId = (userId, id) => {
   return crypto
@@ -17,6 +17,14 @@ const initializeSocket = (server) => {
       origin: "http://localhost:5173",
     },
   });
+
+  let toxicityModel;
+
+  (async ()=>{
+    toxicityModel= await loadToxicityModel();
+    console.log("Toxicity model loaded.")
+  })();
+
   io.on("connection", (socket) => {
     console.log(`New connection: ${socket.id}`);
 
@@ -43,6 +51,16 @@ const initializeSocket = (server) => {
       const roomId = getSecretRoomId(id, userId);
       console.log(firstName + " " + text);
 
+      const isToxic = await checkToxicity(text,toxicityModel);
+      if(isToxic)
+      {
+        return socket.emit("messageError",{
+          message:"Your message contains offensive or toxic content."
+        })
+      }
+
+
+
       // Check if userId and id are friends
       const existingConnectionRequest = await connectionRequestModel.findOne({
         $or: [
@@ -58,15 +76,8 @@ const initializeSocket = (server) => {
         });
       }
 
-      // Content Filtering - Check for offensive words
-      if (containsOffensiveWords(text)) {
-        return socket.emit("messageError", {
-          message: "Your message contains offensive words.",
-        });
-      }
 
       // Censor offensive words if needed
-      const censoredMessage = censorMessage(text);
 
       // Handle chat message saving
       let chat = await ChatModel.findOne({
@@ -84,13 +95,13 @@ const initializeSocket = (server) => {
 
       chat.messages.push({
         senderId: userId,
-        text: censoredMessage, // Save the censored message
+        text
       });
 
       await chat.save();
 
       // Emit the censored message to the room
-      io.to(roomId).emit("messageReceived", { firstName, text: censoredMessage });
+      io.to(roomId).emit("messageReceived", { firstName, text });
     });
 
     // Handle disconnection

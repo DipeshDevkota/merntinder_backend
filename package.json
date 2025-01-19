@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "A simple Express backend application",
   "dependencies": {
+    "@tensorflow-models/toxicity": "^1.2.2",
     "bcrypt": "^5.1.1",
     "cookie-parse": "^0.4.0",
     "cookie-parser": "^1.4.7",

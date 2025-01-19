@@ -1,28 +1,28 @@
-// utils/contentFilter.js
+const toxicity = require("@tensorflow-models/toxicity");
 
-const offensiveWords = [
-    "rough",
-    "badword2",
-    "offensive1",
-    "offensive2",
-    // Add more words as needed
-  ];
+// Load the toxicity model with a threshold (e.g., 0.9 for high confidence)
+const loadToxicityModel = async () => {
+  console.log("Toxicity is",toxicity)
+  const threshold = 0.9;
+  const model = await toxicity.load(threshold);
+  console.log("Model is:",model)
+  return model;
+};
+
+// Function to check for offensive messages using TensorFlow
+const checkToxicity = async (message, model) => {
+  const predictions = await model.classify([message]);
+  console.log("Prediction  is:",predictions)
   
-  // Helper function to check for offensive words
-  function containsOffensiveWords(message) {
-    const lowerMessage = message.toLowerCase();
-    return offensiveWords.some((word) => lowerMessage.includes(word));
-  }
-  
-  // Helper function to censor offensive words
-  function censorMessage(message) {
-    let censoredMessage = message;
-    offensiveWords.forEach((word) => {
-      const regex = new RegExp(`\\b${word}\\b`, "gi");
-      censoredMessage = censoredMessage.replace(regex, "***");
-    });
-    return censoredMessage;
-  }
-  
-  module.exports = { containsOffensiveWords, censorMessage };
-  
+  const toxic = predictions.some(prediction => {
+    // Check if any category has results that exceed the threshold
+
+    return prediction.results[0].match === true;
+  });
+  console.log("Toxic  is:",toxic)
+
+  return toxic;
+
+};
+
+module.exports = { loadToxicityModel, checkToxicity };

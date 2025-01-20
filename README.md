@@ -20,7 +20,7 @@ A Tinder-inspired backend application utilizing Node.js, MongoDB, Socket.io, and
 ### **Installation Steps**
 1. **Clone the Repository**:
    ```bash
-   git clone /home/dipesh/Desktop/mern-tinder-backend
+[   git clone /home/dipesh/Desktop/mern-tinder-backend](https://github.com/DipeshDevkota/merntinder_backend.git)
    cd mern-tinder-backend
    ```
 

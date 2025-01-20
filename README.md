@@ -1,18 +1,3 @@
-Here’s the streamlined and updated version of your project description and code snippets:
-
----
-
-## **Real-Time Chat Using WebSocket (Socket.io)**
-
-### **Tasks**
-1. **Build UI**: Create a chat window accessible at `/chat/:id`.
-2. **Backend Setup**: Implement Socket.io for real-time communication.
-3. **Install Dependencies**:
-   ```bash
-   npm install socket.io
-   ```
-
----
 
 ## **MERN Tinder Backend**
 

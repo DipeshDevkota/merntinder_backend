@@ -19,6 +19,7 @@ This project is a backend application developed using Node.js, MongoDB, Express.
 - **JWT Authentication**: Secures user access with JSON Web Tokens.
 - **Mongoose**: Simplifies MongoDB object modeling.
 - **Pagination**: Limits user feeds to 10 items per page for performance.
+- **Rate Limiting**: Protects the login route with rate limiting to prevent brute-force attacks.This approach helps protect user accounts from unauthorized access and reduces the load on the server from brute-force login attempts.
 
 ---
 

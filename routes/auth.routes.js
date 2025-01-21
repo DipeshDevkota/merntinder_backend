@@ -7,6 +7,7 @@ const {userAuth}= require("../middlewares/auth")
 const crypto= require('crypto')
 const {validateSignUpData}= require("../utils/validate");
 const sendMail = require("../services/sendmail");
+const {loginRateLimiter} = require('../middlewares/ratelimit')
 authroute.post("/signup", async (req, res) => {
     try {
         // Validate data
@@ -61,7 +62,7 @@ authroute.post("/signup", async (req, res) => {
 
   
 
-authroute.post('/login',async (req, res) => {
+authroute.post('/login',loginRateLimiter,async (req, res) => {
     try {
         const { emailId, password } = req.body;
         const user = await User.findOne({ emailId }); // Use findOne to get a single user

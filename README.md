@@ -1,23 +1,13 @@
-Here’s the streamlined and updated version of your project description and code snippets:
-
----
-
-## **Real-Time Chat Using WebSocket (Socket.io)**
-
-### **Tasks**
-1. **Build UI**: Create a chat window accessible at `/chat/:id`.
-2. **Backend Setup**: Implement Socket.io for real-time communication.
-3. **Install Dependencies**:
-   ```bash
-   npm install socket.io
-   ```
-
----
 
 ## **MERN Tinder Backend**
 
-### **Overview**
-A Tinder-inspired backend application utilizing Node.js, MongoDB, Socket.io, and TensorFlow.js. It provides authentication, real-time chat, and user feed management.
+This project is a backend application developed using Node.js, MongoDB, Express.js, and Socket.io. It features TensorFlow.js, a powerful JavaScript library for machine learning, which is used to filter chat messages and ensure safe communication. As part of a MERN stack application, it enables users to interact with each other in real-time. Below is a detailed description of the features and functionalities provided by this project
+
+    Log in to the application.
+    Navigate to the feed to see all logged-in users.
+    Send interest or ignore users as desired.
+    Manage connection requests by accepting or rejecting them.
+    Communicate in real-time with connected users on accepting the connection request using socket.io. TensorFlow.js is used to filter inappropriate messages to ensure safe communication.
 
 ---
 
@@ -33,11 +23,7 @@ A Tinder-inspired backend application utilizing Node.js, MongoDB, Socket.io, and
 ---
 
 ### **Installation Steps**
-1. **Clone the Repository**:
-   ```bash
-   git clone /home/dipesh/Desktop/mern-tinder-backend
-   cd mern-tinder-backend
-   ```
+1. **Clone the Repository**  
 
 2. **Install Dependencies**:
    ```bash

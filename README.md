@@ -32,12 +32,7 @@ This project is a backend application developed using Node.js, MongoDB, Express.
    npm install socket.io
    ```
 
-3. **Environment Configuration**:
-   - Create a `.env` file with the following:
-     ```env
-     MONGO_URI=your_mongodb_uri
-     JWT_SECRET=your_jwt_secret
-     ```
+
 
 4. **Start the Server**:
    ```bash

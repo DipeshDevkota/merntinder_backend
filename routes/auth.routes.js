@@ -21,34 +21,20 @@ authroute.post("/signup", async (req, res) => {
         // Encrypt the password
         const passwordHash = await bcrypt.hash(password, 10);
 
-        // const otp = crypto.randomInt(100000, 999999).toString();
-        // console.log("Generated OTP is:",otp)
-        // const otpExpiry = new Date(Date.now() + 50 * 60 * 1000); // OTP valid for 10 minutes
-
         // Creating a new instance of the User Model
         const user = new User({
             firstName,
             lastName,
             emailId,
             password: passwordHash,
-            // otp,
-            // otpExpiry,
-            // isVerified: false,
+          
         });
 
-        // Save the user in the database
+     
         await user.save();
 
-        // Send the email with OTP
-        // await sendMail({
-        //     emailId, 
-        //     subject:"Verify your email", 
-        //     text:`Your OTP is ${otp}`, 
-        //     html:`<b>Your OTP is ${otp}</b>`});
-
-        // Send success response after user creation and email send
+        user creation and email send
         return res.status(200).json({
-            // message: 'OTP sent to your email. Please verify your account.',
             user,
         });
 

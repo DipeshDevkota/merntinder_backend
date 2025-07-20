@@ -75,11 +75,10 @@ authroute.post('/login',loginRateLimiter,async (req, res) => {
         if (isPasswordValid) {
             //generation of token
 
-         const token=  jwt.sign({_id:user.id},"Dipesh78$",{expiresIn:'1d'})
          console.log(token)
          //add the token to cookie and send the reponse back to the user
 
-         res.cookie("token",token,{
+         res.cookie("",,{
             httpOnly: true,
             secure: false, // Set to true if using HTTPS
             sameSite: "strict",
@@ -100,7 +99,7 @@ authroute.post('/logout', userAuth, async (req, res) => {
     // console.log(`LOgging out UserId:${userId}`)
     
 //   disconnectUserSocket(userId)
-    res.cookie("token", null, {
+    res.cookie("", null, {
         expires: new Date(Date.now()), 
     });
     res.status(200).send("User logged out successfully!"); 
